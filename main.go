@@ -15,7 +15,7 @@ import (
 	"github.com/educlos/testrail"
 	"github.com/urfave/cli"
 
-	"github.com/whoshuu/trailer/spec"
+	"github.com/docker/trailer/spec"
 )
 
 type Suite struct {
