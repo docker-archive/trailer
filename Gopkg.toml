@@ -26,13 +26,20 @@
 
 
 [[constraint]]
-  branch = "master"
   name = "github.com/educlos/testrail"
+  revision = "0142f42e9ad1dcdc0fcecf5d0fd62376f1b8ec16"
 
 [[constraint]]
   name = "github.com/urfave/cli"
-  version = "1.19.1"
+  revision = "0bdeddeeb0f650497d603c4ad7b20cfe685682f6"
+
+[[constraint]]
+  name = "github.com/onsi/ginkgo"
+  revision = "68f622cf9b05e245b580cda6debc2b1bd3094c97"
+
+[[constraint]]
+  name = "gopkg.in/yaml.v2"
+  revision = "a3f3340b5840cee44f372bddb5880fcbc419b46a"
 
 [prune]
-  go-tests = true
   unused-packages = true

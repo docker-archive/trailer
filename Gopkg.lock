@@ -2,7 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/educlos/testrail"
   packages = ["."]
   revision = "0142f42e9ad1dcdc0fcecf5d0fd62376f1b8ec16"
@@ -23,16 +22,21 @@
   name = "github.com/urfave/cli"
   packages = ["."]
   revision = "0bdeddeeb0f650497d603c4ad7b20cfe685682f6"
-  version = "v1.19.1"
 
 [[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "f6f352972f061230a99fbf49d1eb8073ebdb36cb"
+  revision = "ad87a3a340fa7f3bed189293fbfa7a9b7e021ae1"
+
+[[projects]]
+  name = "gopkg.in/yaml.v2"
+  packages = ["."]
+  revision = "a3f3340b5840cee44f372bddb5880fcbc419b46a"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "146a39707ff24ae2c839feaccd5fd602ed712d54938623613b68a7705b56aab3"
+  inputs-digest = "eabc9168464bb055be3ff2c6e93df5d4278db6d5adbef300f52b3ebe3bb67fe8"
   solver-name = "gps-cdcl"
   solver-version = 1
