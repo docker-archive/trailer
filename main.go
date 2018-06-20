@@ -2,17 +2,28 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
+
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/educlos/testrail"
 	"github.com/urfave/cli"
 
-	"github.com/docker/trailer/spec"
+	"github.com/whoshuu/trailer/spec"
 )
+
+type Suite struct {
+	ProjectID   int            `yaml:"project_id"`
+	SuiteID     int            `yaml:"suite_id"`
+	LastUpdated string         `yaml:"last_updated"`
+	Cases       map[int]string `yaml:"cases"`
+}
 
 func main() {
 	username := os.Getenv("TESTRAIL_USERNAME")
@@ -23,11 +34,14 @@ func main() {
 	}
 
 	var (
-		verbose bool
-		dry     bool
-		retries int
-		runID   int
-		comment string
+		verbose   bool
+		dry       bool
+		retries   int
+		runID     int
+		suiteID   int
+		projectID int
+		comment   string
+		file      string
 	)
 
 	app := cli.NewApp()
@@ -130,6 +144,101 @@ func main() {
 							}
 							break
 						}
+					}
+				}
+
+				return nil
+			},
+		},
+		{
+			Name:    "download",
+			Aliases: []string{"d"},
+			Usage:   "Download case specs from TestRail",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "verbose, v",
+					Usage:       "turn on debug logs",
+					Destination: &verbose,
+				},
+				cli.IntFlag{
+					Name:        "project-id, p",
+					Usage:       "TestRail project ID to download cases from",
+					Destination: &projectID,
+				},
+				cli.IntFlag{
+					Name:        "suite-id, s",
+					Usage:       "TestRail suite ID to download cases from",
+					Destination: &suiteID,
+				},
+				cli.StringFlag{
+					Name:        "file, f",
+					Usage:       "File to write downloaded cases to",
+					Destination: &file,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if projectID == 0 {
+					log.Fatalf("Must set --project-id to a non-zero integer")
+				}
+
+				if suiteID == 0 {
+					log.Fatalf("Must set --suite-id to a non-zero integer")
+				}
+
+				client := testrail.NewClient("https://docker.testrail.com", username, token)
+				cases, err := client.GetCases(projectID, suiteID)
+				if err != nil {
+					log.Fatalf("Error getting cases: %s", err)
+				}
+
+				s := Suite{
+					LastUpdated: time.Unix(0, 0).Format(time.RFC3339Nano),
+					ProjectID:   projectID,
+					SuiteID:     suiteID,
+					Cases:       map[int]string{},
+				}
+
+				if file != "" {
+					if _, err = os.Stat(file); err == nil {
+						data, err := ioutil.ReadFile(file)
+						if err != nil {
+							log.Fatalf("Error reading file: %s", err)
+						}
+
+						err = yaml.Unmarshal(data, &s)
+						if err != nil {
+							log.Fatalf("Error unmarshaling suite data: %s", err)
+						}
+					}
+				}
+
+				lastUpdated, err := time.Parse(time.RFC3339Nano, s.LastUpdated)
+				if err != nil {
+					log.Fatalf("Error parsing last_updated time: %s", err)
+				}
+
+				updated := false
+				for _, c := range cases {
+					if lastUpdated.Before(time.Unix(int64(c.UdpatedOn), 0)) {
+						s.Cases[c.ID] = c.Title
+						updated = true
+					}
+				}
+
+				if updated {
+					s.LastUpdated = time.Now().Format(time.RFC3339Nano)
+					data, err := yaml.Marshal(&s)
+					if err != nil {
+						log.Fatalf("Error marshaling suite data: %s", err)
+					}
+
+					if file != "" {
+						err = ioutil.WriteFile(file, data, 0644)
+						if err != nil {
+							log.Fatalf("Error writing suite data to output file: %s", err)
+						}
+					} else {
+						log.Print(string(data))
 					}
 				}
 
