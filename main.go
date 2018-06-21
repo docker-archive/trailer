@@ -26,13 +26,6 @@ type Suite struct {
 }
 
 func main() {
-	username := os.Getenv("TESTRAIL_USERNAME")
-	token := os.Getenv("TESTRAIL_TOKEN")
-
-	if username == "" || token == "" {
-		log.Fatalf("Need to set TESTRAIL_USERNAME and TESTRAIL_TOKEN")
-	}
-
 	var (
 		verbose   bool
 		dry       bool
@@ -85,6 +78,13 @@ func main() {
 			},
 			ArgsUsage: "[input *.xml files...]",
 			Action: func(c *cli.Context) error {
+				username := os.Getenv("TESTRAIL_USERNAME")
+				token := os.Getenv("TESTRAIL_TOKEN")
+
+				if username == "" || token == "" {
+					log.Fatalf("Need to set TESTRAIL_USERNAME and TESTRAIL_TOKEN")
+				}
+
 				if runID == 0 {
 					log.Fatalf("Must set --run-id to a non-zero integer")
 				}
@@ -177,6 +177,13 @@ func main() {
 				},
 			},
 			Action: func(c *cli.Context) error {
+				username := os.Getenv("TESTRAIL_USERNAME")
+				token := os.Getenv("TESTRAIL_TOKEN")
+
+				if username == "" || token == "" {
+					log.Fatalf("Need to set TESTRAIL_USERNAME and TESTRAIL_TOKEN")
+				}
+
 				if projectID == 0 {
 					log.Fatalf("Must set --project-id to a non-zero integer")
 				}
@@ -223,6 +230,80 @@ func main() {
 						s.Cases[c.ID] = c.Title
 						updated = true
 					}
+				}
+
+				if updated {
+					s.LastUpdated = time.Now().Format(time.RFC3339Nano)
+					data, err := yaml.Marshal(&s)
+					if err != nil {
+						log.Fatalf("Error marshaling suite data: %s", err)
+					}
+
+					if file != "" {
+						err = ioutil.WriteFile(file, data, 0644)
+						if err != nil {
+							log.Fatalf("Error writing suite data to output file: %s", err)
+						}
+					} else {
+						log.Print(string(data))
+					}
+				}
+
+				return nil
+			},
+		},
+		{
+			Name:    "prune",
+			Aliases: []string{"p"},
+			Usage:   "Prune case specs from a cases file",
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:        "verbose, v",
+					Usage:       "turn on debug logs",
+					Destination: &verbose,
+				},
+				cli.StringFlag{
+					Name:        "file, f",
+					Usage:       "File to write downloaded cases to",
+					Destination: &file,
+				},
+			},
+			ArgsUsage: "[input case IDs...]",
+			Action: func(c *cli.Context) error {
+				if file == "" {
+					log.Fatal("Must specify an input cases file")
+				}
+
+				s := Suite{
+					LastUpdated: time.Unix(0, 0).Format(time.RFC3339Nano),
+					ProjectID:   projectID,
+					SuiteID:     suiteID,
+					Cases:       map[int]string{},
+				}
+
+				data, err := ioutil.ReadFile(file)
+				if err != nil {
+					log.Fatalf("Error reading file: %s", err)
+				}
+
+				err = yaml.Unmarshal(data, &s)
+				if err != nil {
+					log.Fatalf("Error unmarshaling suite data: %s", err)
+				}
+
+				caseIDsToPrune := []int{}
+				for _, iString := range c.Args() {
+					i, err := strconv.Atoi(iString)
+					if err != nil {
+						log.Fatalf("Cannot convert string to int: %s", err)
+					}
+					caseIDsToPrune = append(caseIDsToPrune, i)
+				}
+
+				updated := false
+				for _, i := range caseIDsToPrune {
+					delete(s.Cases, i)
+					updated = true
 				}
 
 				if updated {
