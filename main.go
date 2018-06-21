@@ -302,8 +302,10 @@ func main() {
 
 				updated := false
 				for _, i := range caseIDsToPrune {
-					delete(s.Cases, i)
-					updated = true
+					if _, ok := s.Cases[i]; ok {
+						delete(s.Cases, i)
+						updated = true
+					}
 				}
 
 				if updated {
