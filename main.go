@@ -112,6 +112,10 @@ func main() {
 						if err != nil {
 							log.Fatalf(fmt.Sprintf("Failed to create results payload: %s", err))
 						}
+						results, err = pruneResults(client, runID, results)
+						if err != nil {
+							log.Fatalf("Failed to prune Test Results")
+						}
 						r, err := client.AddResultsForCases(runID, results)
 						if err != nil {
 							errString := err.Error()
@@ -331,4 +335,27 @@ func main() {
 	}
 
 	app.Run(os.Args)
+}
+
+// We only want to send the results if they are applicable for a given runID or the API will throw an error.
+func pruneResults(client *testrail.Client, runID int, results testrail.SendableResultsForCase) (testrail.SendableResultsForCase, error) {
+	// First gather all the cases of the runID
+	tests, err := client.GetTests(runID)
+	if err != nil {
+		return testrail.SendableResultsForCase{}, err
+	}
+
+	// Create a map of these test case IDs
+	includedTests := make(map[int]struct{})
+	for _, test := range tests {
+		includedTests[test.CaseID] = struct{}{}
+	}
+
+	var applicableResults testrail.SendableResultsForCase
+	for _, result := range results.Results {
+		if _, exists := includedTests[result.CaseID]; exists {
+			applicableResults.Results = append(applicableResults.Results, result)
+		}
+	}
+	return applicableResults, nil
 }
