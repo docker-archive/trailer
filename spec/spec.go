@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"time"
+	"encoding/xml"
 
 	"github.com/educlos/testrail"
 	"github.com/onsi/ginkgo/reporters"
@@ -14,7 +15,8 @@ import (
 // TODO: split this up into more pieces
 
 type JUnitTestSuites struct {
-	Suites []reporters.JUnitTestSuite `xml:"testsuite"`
+	XMLName xml.Name `xml:"testsuites"`
+	Suites  []reporters.JUnitTestSuite `xml:"testsuite"`
 }
 
 type TestStatus int
