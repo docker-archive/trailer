@@ -2,11 +2,22 @@
 
 
 [[projects]]
+  digest = "1:2f7f7dc60a1e4160196e4ba7e773ace2ffd874fedcc4e79682863892d6362e1f"
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  pruneopts = "U"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
+
+[[projects]]
+  digest = "1:c1c63062cb29d44c65bb37760288d79d1181d31622bfab7175b8332d7d8922be"
   name = "github.com/educlos/testrail"
   packages = ["."]
+  pruneopts = "U"
   revision = "0142f42e9ad1dcdc0fcecf5d0fd62376f1b8ec16"
 
 [[projects]]
+  digest = "1:ccefb7547b3e06c55f6cee69e9bacfab617f14dcc6eb7a97f9e4ac8d1b4a4ed2"
   name = "github.com/onsi/ginkgo"
   packages = [
     "config",
@@ -14,29 +25,71 @@
     "reporters/stenographer",
     "reporters/stenographer/support/go-colorable",
     "reporters/stenographer/support/go-isatty",
-    "types"
+    "types",
   ]
+  pruneopts = "U"
   revision = "68f622cf9b05e245b580cda6debc2b1bd3094c97"
 
 [[projects]]
+  digest = "1:97f2e3987902ab89b6fe5cff761b3b318aed6fb3c0d9cc31986073e7fae2444a"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  pruneopts = "U"
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  digest = "1:bc0e3de5e9bea5d4efb093af21932b620b715a02630ed820d545850ddff59baa"
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  pruneopts = "U"
+  revision = "477a77ecc69700c7cdeb1fa9e129548e1c1c393c"
+  version = "v0.1.1"
+
+[[projects]]
+  digest = "1:bf786ea11747e5a28825a060bda42b9698f711eca0552e1cce6bed7a010b87ec"
+  name = "github.com/stretchr/testify"
+  packages = [
+    ".",
+    "assert",
+    "http",
+    "mock",
+  ]
+  pruneopts = "U"
+  revision = "221dbe5ed46703ee255b1da0dec05086f5035f62"
+  version = "v1.4.0"
+
+[[projects]]
+  digest = "1:03c2c8903e5e313ddf03929c459c71847f2b7738085330c14ee95cfb4e26e87d"
   name = "github.com/urfave/cli"
   packages = ["."]
+  pruneopts = "U"
   revision = "0bdeddeeb0f650497d603c4ad7b20cfe685682f6"
 
 [[projects]]
   branch = "master"
+  digest = "1:8a23ef482b838112bbb1c8f0dad12b022891fd05a3c3fdc5a2b555eb3968fee8"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "ad87a3a340fa7f3bed189293fbfa7a9b7e021ae1"
+  pruneopts = "U"
+  revision = "749cb33beabd9aa6d3178e3de05bcc914f70b2bf"
 
 [[projects]]
+  digest = "1:896465634474f19642ac8b7bef06539d2b898539b6cd34c7236653fc50d30768"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
+  pruneopts = "U"
   revision = "a3f3340b5840cee44f372bddb5880fcbc419b46a"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "eabc9168464bb055be3ff2c6e93df5d4278db6d5adbef300f52b3ebe3bb67fe8"
+  input-imports = [
+    "github.com/educlos/testrail",
+    "github.com/onsi/ginkgo/reporters",
+    "github.com/stretchr/testify",
+    "github.com/urfave/cli",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
